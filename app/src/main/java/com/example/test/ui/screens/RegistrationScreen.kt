@@ -1,69 +1,88 @@
 // Dentro de /app/java/com.example.test/ui/screens/RegistrationScreen.kt
-// (Asegúrate que 'com.example.test' sea tu paquete real)
-
 package com.example.test.ui.screens
 
 // --- Importaciones Necesarias ---
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState // Para hacer la columna scrollable si hay muchos campos
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape // Para botón redondeado
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.* // O androidx.compose.material.* si usas Material 2
-import androidx.compose.runtime.* // Necesario para 'remember' si usamos estado más adelante
+import androidx.compose.material.icons.filled.* // Importar iconos para TextFields
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight // Para botón
+// Importaciones para ocultar contraseña y tipos de teclado (opcional por ahora)
+// import androidx.compose.ui.text.input.PasswordVisualTransformation
+// import androidx.compose.ui.text.input.KeyboardType
+// import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-// Importa PasswordVisualTransformation si quieres ocultar la contraseña (opcional por ahora)
-// import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.sp // Para botón
 
-// --- La Pantalla Principal ---
-@OptIn(ExperimentalMaterial3Api::class) // Necesario para TopAppBar en Material 3
+// Importa tus colores si están definidos centralmente
+// import com.example.test.ui.theme.DarkBackground
+// import com.example.test.ui.theme.TextColorLight
+
+// --- COLORES (Define aquí los que no sean globales/importados) ---
+val FocusedInputColor = BrightAccentColor // Color para elementos enfocados (usa el acento)
+
+val UnfocusedInputColor = TextColorLight.copy(alpha = 0.7f)
+// Asume que DarkBackground y TextColorLight vienen de otro sitio o del tema
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(onNavigateBack: () -> Unit) {
+fun RegistrationScreen(
+    onNavigateBack: () -> Unit
+) {
     Scaffold(
+        containerColor = DarkBackground, // Fondo oscuro para toda la pantalla
         topBar = {
-            // Barra superior con el título
             TopAppBar(
                 title = { Text("Crear Cuenta") },
-                navigationIcon = { // <-- AÑADE ESTO
-                    IconButton(onClick = onNavigateBack) { // Llama a la función para volver
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver" // Descripción para accesibilidad
+                            contentDescription = "Volver",
+                            tint = IconColorLight // Asegura color claro
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary
+                    containerColor = DarkBackground, // Fondo oscuro
+                    titleContentColor = TextColorLight, // Texto claro
+                    navigationIconContentColor = IconColorLight // Icono claro
                 )
-                // Puedes añadir un botón de navegación "Atrás" aquí si quieres
-                // navigationIcon = { IconButton(onClick = { /* Volver atrás */ }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } }
             )
         }
     ) { paddingValues -> // Padding del Scaffold
 
-        // Columna que permite scroll si el contenido es muy largo
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // Aplica padding del Scaffold
-                .padding(16.dp) // Padding interno de la columna
-                .verticalScroll(rememberScrollState()), // Habilita el scroll vertical
-            horizontalAlignment = Alignment.CenterHorizontally, // Centra elementos horizontalmente
-            verticalArrangement = Arrangement.spacedBy(16.dp) // Espacio uniforme entre elementos
+                .padding(paddingValues)
+                .padding(horizontal = 24.dp, vertical = 16.dp) // Ajusta padding si es necesario
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp) // Reduce un poco el espacio si prefieres
         ) {
 
-            // --- Campos de Texto ---
+            // --- Campos de Texto Estilizados ---
 
             OutlinedTextField(
-                value = "", // Vacío por ahora
-                onValueChange = {}, // No hace nada por ahora
+                value = "",
+                onValueChange = {},
                 label = { Text("Nombre(s)") },
-                modifier = Modifier.fillMaxWidth(), // Ocupa todo el ancho
-                singleLine = true // Evita saltos de línea
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                leadingIcon = { // Icono Opcional
+                    Icon(Icons.Filled.AccountCircle, contentDescription = null, tint = UnfocusedInputColor)
+                },
+                colors = customTextFieldColors() // Aplicar colores personalizados
             )
 
             OutlinedTextField(
@@ -71,7 +90,11 @@ fun RegistrationScreen(onNavigateBack: () -> Unit) {
                 onValueChange = {},
                 label = { Text("Apellidos") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                leadingIcon = { // Icono Opcional
+                    Icon(Icons.Filled.AccountCircle, contentDescription = null, tint = UnfocusedInputColor)
+                },
+                colors = customTextFieldColors()
             )
 
             OutlinedTextField(
@@ -79,8 +102,12 @@ fun RegistrationScreen(onNavigateBack: () -> Unit) {
                 onValueChange = {},
                 label = { Text("Correo Electrónico") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-                // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email) // Para teclado de email
+                singleLine = true,
+                leadingIcon = { // Icono Opcional
+                    Icon(Icons.Filled.Email, contentDescription = null, tint = UnfocusedInputColor)
+                },
+                // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email), // Descomentar si manejas estado
+                colors = customTextFieldColors()
             )
 
             OutlinedTextField(
@@ -88,9 +115,13 @@ fun RegistrationScreen(onNavigateBack: () -> Unit) {
                 onValueChange = {},
                 label = { Text("Contraseña") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-                // visualTransformation = PasswordVisualTransformation() // Para ocultar contraseña
-                // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password) // Para teclado de contraseña
+                singleLine = true,
+                leadingIcon = { // Icono Opcional
+                    Icon(Icons.Filled.Lock, contentDescription = null, tint = UnfocusedInputColor)
+                },
+                // visualTransformation = PasswordVisualTransformation(), // Descomentar si manejas estado
+                // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), // Descomentar si manejas estado
+                colors = customTextFieldColors()
             )
 
             OutlinedTextField(
@@ -98,34 +129,73 @@ fun RegistrationScreen(onNavigateBack: () -> Unit) {
                 onValueChange = {},
                 label = { Text("Confirmar Contraseña") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-                // visualTransformation = PasswordVisualTransformation()
-                // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                singleLine = true,
+                leadingIcon = { // Icono Opcional
+                    Icon(Icons.Filled.Lock, contentDescription = null, tint = UnfocusedInputColor)
+                },
+                // visualTransformation = PasswordVisualTransformation(),
+                // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                colors = customTextFieldColors()
             )
 
-            // --- Botón de Registro ---
+            // --- Botón de Registro Estilizado ---
             Button(
-                onClick = { /* Acción de registro (ninguna por ahora) */ },
+                onClick = { /* Acción de registro */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp) // Un poco más de espacio arriba del botón
+                    .padding(top = 16.dp) // Más espacio arriba
+                    .height(50.dp),
+                shape = RoundedCornerShape(50), // Píldora
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = BrightAccentColor // Fondo de acento
+                )
             ) {
-                Text("Registrarse")
+                Text(
+                    "Registrarse",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = DarkerTextColor // Texto oscuro
+                )
             }
 
-            // --- Enlace a Login (Opcional) ---
-            TextButton(onClick = { /* Ir a la pantalla de Login (ninguna acción por ahora) */ }) {
-                Text("¿Ya tienes cuenta? Inicia Sesión")
+            // --- Enlace a Login Estilizado (Opcional) ---
+            TextButton(onClick = { /* Acción ir a Login */ }) {
+                Text(
+                    "¿Ya tienes cuenta? Inicia Sesión",
+                    color = BrightAccentColor // Color de acento para el enlace
+                )
             }
-        }
-    }
+        } // Fin Column
+    } // Fin Scaffold
 }
 
+// --- Función auxiliar para colores de TextField (para no repetir) ---
+@Composable
+private fun customTextFieldColors(): TextFieldColors {
+    return OutlinedTextFieldDefaults.colors(
+        // Colores del texto y cursor
+        focusedTextColor = TextColorLight,
+        unfocusedTextColor = TextColorLight.copy(alpha = 0.8f),
+        cursorColor = BrightAccentColor,
+        // Colores de borde
+        focusedBorderColor = FocusedInputColor,
+        unfocusedBorderColor = UnfocusedInputColor,
+        // Colores de label (etiqueta)
+        focusedLabelColor = FocusedInputColor,
+        unfocusedLabelColor = UnfocusedInputColor,
+        // Colores del icono principal (leading)
+        focusedLeadingIconColor = FocusedInputColor,
+        unfocusedLeadingIconColor = UnfocusedInputColor
+        // Puedes añadir más personalizaciones si quieres (fondo, icono trailing, etc.)
+    )
+}
+
+
 // --- Previsualización ---
-@Preview(showBackground = true, widthDp = 360, heightDp = 700) // Ajusta altura si es necesario
+@Preview(showBackground = true, backgroundColor = 0xFF1A283A) // Fondo oscuro
 @Composable
 fun RegistrationScreenPreview() {
-    MaterialTheme { // Aplica el tema para la preview
-        RegistrationScreen(onNavigateBack = {})
+    MaterialTheme { // Usa MaterialTheme o tu tema específico
+        RegistrationScreen(onNavigateBack = {}) // Pasa lambda vacía
     }
 }
