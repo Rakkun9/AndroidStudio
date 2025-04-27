@@ -7,6 +7,8 @@ package com.example.test.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState // Para hacer la columna scrollable si hay muchos campos
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.* // O androidx.compose.material.* si usas Material 2
 import androidx.compose.runtime.* // Necesario para 'remember' si usamos estado más adelante
 import androidx.compose.ui.Alignment
@@ -25,6 +27,14 @@ fun RegistrationScreen(onNavigateBack: () -> Unit) {
             // Barra superior con el título
             TopAppBar(
                 title = { Text("Crear Cuenta") },
+                navigationIcon = { // <-- AÑADE ESTO
+                    IconButton(onClick = onNavigateBack) { // Llama a la función para volver
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver" // Descripción para accesibilidad
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary
