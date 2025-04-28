@@ -1,43 +1,35 @@
-// Dentro de /app/java/com.example.test/ui/screens/ShoppingCartScreen.kt
+
 package com.example.test.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed // Usar itemsIndexed para el divisor
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack // Icono volver
-import androidx.compose.material.icons.filled.* // Importa iconos necesarios
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.* // Necesario para remember, mutableStateOf, etc. si añades estado
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-// Importa tus colores si están definidos centralmente
-// import com.example.test.ui.theme.DarkBackground
-// import com.example.test.ui.theme.TextColorLight
 
-// --- COLORES (Define aquí los que no sean globales/importados) ---
-val DarkerTextColor = Color(0xFF1A283A) // Texto oscuro para botones claros
-// Asume que DarkBackground y TextColorLight vienen de otro sitio o del tema
+
+val DarkerTextColor = Color(0xFF1A283A)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingCartScreen(
-    onNavigateBack: () -> Unit // Parámetro para volver atrás
+    onNavigateBack: () -> Unit
 ) {
-    // Datos de ejemplo (más adelante podrías usar un ViewModel)
     val sampleCartItems = remember {
         List(3) { index ->
             CartItemData(
@@ -51,7 +43,7 @@ fun ShoppingCartScreen(
     }
 
     Scaffold(
-        containerColor = DarkBackground, // Fondo oscuro general
+        containerColor = DarkBackground,
         topBar = {
             TopAppBar(
                 title = { Text("Carrito de Compras") },
@@ -60,20 +52,18 @@ fun ShoppingCartScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver",
-                            tint = IconColorLight // Asegura color claro
+                            tint = IconColorLight
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBackground, // Fondo oscuro
-                    titleContentColor = TextColorLight, // Texto claro
+                    containerColor = DarkBackground,
+                    titleContentColor = TextColorLight,
                     navigationIconContentColor = IconColorLight // Icono claro
                 )
             )
         }
     ) { paddingValues ->
-
-        // Si el carrito está vacío (añadir lógica después)
         if (sampleCartItems.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -89,89 +79,80 @@ fun ShoppingCartScreen(
                 )
             }
         } else {
-            // Si hay items, muestra la columna con lista, resumen y botón
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                // --- Lista de Items ---
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp) // Más espacio entre cards
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     itemsIndexed(sampleCartItems) { index, item ->
-                        CartItemCard(item = item) // Usamos el nuevo Card Item
-                        // No necesitamos el divisor aquí si usamos Cards con espacio
-                    }
-                } // Fin LazyColumn
+                        CartItemCard(item = item)
 
-                // --- Separador ---
+                    }
+                }
+
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 16.dp),
-                    color = TextColorLight.copy(alpha = 0.2f) // Color tenue para el divisor
+                    color = TextColorLight.copy(alpha = 0.2f)
                 )
 
-                // --- Resumen del Carrito ---
                 CartSummary(
                     subtotal = "125.97 €", // Calcular real después
                     shipping = "5.00 €",
                     total = "130.97 €"
                 )
 
-                // --- Botón de Checkout ---
                 Button(
                     onClick = { /* Acción Checkout */ },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp) // Espacio arriba y abajo
+                        .padding(vertical = 16.dp)
                         .height(50.dp),
-                    shape = RoundedCornerShape(50), // Botón píldora
+                    shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BrightAccentColor // Fondo color acento
+                        containerColor = BrightAccentColor
                     )
                 ) {
                     Text(
                         "Proceder al Pago",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = DarkerTextColor // Texto oscuro sobre fondo claro
+                        color = DarkerTextColor
                     )
                 }
-            } // Fin Columna Principal (con items)
-        } // Fin else (hay items)
-    } // Fin Scaffold
+            }
+        }
+    }
 }
-
-// --- Estructura de datos para un item del carrito ---
 data class CartItemData(
     val id: Int,
     val productName: String,
     val productPrice: String,
-    var quantity: Int, // var para poder modificarla (si añades lógica)
-    val imageVector: ImageVector // Placeholder, idealmente sería un URL o Res ID
+    var quantity: Int,
+    val imageVector: ImageVector
 )
 
-// --- Composable MEJORADO para un Item del Carrito (dentro de un Card) ---
 @Composable
 fun CartItemCard(item: CartItemData) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp), // Bordes más redondeados
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = SlightlyLighterBackground // Fondo de tarjeta ligeramente más claro
+            containerColor = SlightlyLighterBackground
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp), // Padding interno de la Card
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Placeholder Imagen
             Box(
                 modifier = Modifier
                     .size(64.dp)
@@ -212,8 +193,15 @@ fun CartItemCard(item: CartItemData) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 // Controles de Cantidad
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { /* Decrementar cantidad */ }, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Filled.Delete, contentDescription = "Quitar uno", tint = IconColorLight)
+                    IconButton(
+                        onClick = { /* Decrementar cantidad */ },
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = "Quitar uno",
+                            tint = IconColorLight
+                        )
                     }
                     Text(
                         "${item.quantity}",
@@ -221,8 +209,15 @@ fun CartItemCard(item: CartItemData) {
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 4.dp)
                     )
-                    IconButton(onClick = { /* Incrementar cantidad */ }, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Filled.Add, contentDescription = "Añadir uno", tint = IconColorLight)
+                    IconButton(
+                        onClick = { /* Incrementar cantidad */ },
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "Añadir uno",
+                            tint = IconColorLight
+                        )
                     }
                 }
                 // Botón Eliminar
@@ -250,7 +245,11 @@ fun CartSummary(subtotal: String, shipping: String, total: String) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Subtotal:", style = MaterialTheme.typography.bodyLarge, color = TextColorLight.copy(alpha = 0.8f))
+            Text(
+                "Subtotal:",
+                style = MaterialTheme.typography.bodyLarge,
+                color = TextColorLight.copy(alpha = 0.8f)
+            )
             Text(subtotal, style = MaterialTheme.typography.bodyLarge, color = TextColorLight)
         }
 
@@ -261,7 +260,11 @@ fun CartSummary(subtotal: String, shipping: String, total: String) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Envío:", style = MaterialTheme.typography.bodyLarge, color = TextColorLight.copy(alpha = 0.8f))
+            Text(
+                "Envío:",
+                style = MaterialTheme.typography.bodyLarge,
+                color = TextColorLight.copy(alpha = 0.8f)
+            )
             Text(shipping, style = MaterialTheme.typography.bodyLarge, color = TextColorLight)
         }
 
@@ -275,8 +278,18 @@ fun CartSummary(subtotal: String, shipping: String, total: String) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Total:", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = TextColorLight) // Más grande
-            Text(total, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = BrightAccentColor) // Total con acento
+            Text(
+                "Total:",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = TextColorLight
+            ) // Más grande
+            Text(
+                total,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = BrightAccentColor
+            ) // Total con acento
         }
     }
 }
