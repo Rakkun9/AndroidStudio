@@ -99,7 +99,7 @@ fun LoginScreen(
             kotlinx.coroutines.delay(1500) // Simula una llamada de red (importa kotlinx.coroutines.delay)
 
             // 5. Autenticación simulada
-            if (email == "test@example.com" && password == "password123") {
+            if (email == "test@example.com" && password == "password123" ) {
                 onLoginSuccess() // Llama a la lambda de éxito (que navega)
             } else {
                 generalLoginError = "Correo o contraseña incorrectos"
