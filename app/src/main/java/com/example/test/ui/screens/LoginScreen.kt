@@ -28,20 +28,85 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.test.R
+import androidx.compose.material3.CircularProgressIndicator // Para el indicador de carga
+import androidx.compose.material3.SnackbarHost // Para mensajes (opcional, Text es más simple)
+import androidx.compose.material3.SnackbarHostState // Para mensajes (opcional)
+import androidx.compose.ui.text.style.TextAlign
+import kotlinx.coroutines.launch // Para coroutines
 
 
 val TextFieldBackgroundColor = Color(0xFF2A3C51)
+
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
     onNavigateBack: () -> Unit, // Para el botón de volver
-    onLoginSuccess: () -> Unit, // Acción al hacer login (aún no implementada)
-    onForgotPassword: () -> Unit, // Acción al olvidar contraseña (aún no implementada)
+    onLoginSuccess: () -> Unit,
+    onForgotPassword: () -> Unit,
 ) {
+
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    // --- NUEVOS ESTADOS ---
+    // Para errores de validación por campo
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+    // Para error general de login (ej: credenciales incorrectas)
+    var generalLoginError by remember { mutableStateOf<String?>(null) }
+    // Para mostrar el indicador de carga
+    var isLoading by remember { mutableStateOf(false) }
+
+    // Scope para lanzar coroutines (para simular delay)
+    val scope = rememberCoroutineScope()
+
+    fun handleLoginAttempt() {
+        // 1. Limpiar errores previos
+        emailError = null
+        passwordError = null
+        generalLoginError = null
+        var isValid = true
+
+        // 2. Validar Email
+        if (email.isBlank()) {
+            emailError = "El correo no puede estar vacío"
+            isValid = false
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            // Necesitarás importar android.util.Patterns
+            emailError = "Formato de correo inválido"
+            isValid = false
+        }
+
+        // 3. Validar Contraseña
+        if (password.isBlank()) {
+            passwordError = "La contraseña no puede estar vacía"
+            isValid = false
+        } else if (password.length < 6) { // Ejemplo: Mínimo 6 caracteres
+            passwordError = "La contraseña debe tener al menos 6 caracteres"
+            isValid = false
+        }
+
+        if (!isValid) {
+            return // No continuar si la validación falló
+        }
+
+        // 4. Si es válido, iniciar carga y simular autenticación
+        scope.launch {
+            isLoading = true
+            kotlinx.coroutines.delay(1500) // Simula una llamada de red (importa kotlinx.coroutines.delay)
+
+            // 5. Autenticación simulada
+            if (email == "test@example.com" && password == "password123") {
+                onLoginSuccess() // Llama a la lambda de éxito (que navega)
+            } else {
+                generalLoginError = "Correo o contraseña incorrectos"
+            }
+            isLoading = false
+        }
+    }
 
     Scaffold(
         containerColor = DarkBackground
@@ -107,7 +172,13 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(4.dp))
             TextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { email = it; emailError = null },
+                isError = emailError != null, // Se marca como error si hay mensaje
+                supportingText = { // Muestra el mensaje de error debajo
+                    if (emailError != null) {
+                        Text(emailError!!, color = MaterialTheme.colorScheme.error)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Correo", color = UnfocusedInputColor) },
                 leadingIcon = {
@@ -136,7 +207,13 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(4.dp))
             TextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { password = it; passwordError = null },
+                isError = passwordError != null,
+                supportingText = {
+                    if (passwordError != null) {
+                        Text(passwordError!!, color = MaterialTheme.colorScheme.error)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Contraseña", color = UnfocusedInputColor) },
                 leadingIcon = {
@@ -163,7 +240,6 @@ fun LoginScreen(
                 }
             )
 
-
             TextButton(
                 onClick = onForgotPassword,
                 modifier = Modifier
@@ -177,11 +253,32 @@ fun LoginScreen(
                 )
             }
 
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(bottom = 16.dp), // Espacio si está encima del botón
+                    color = BrightAccentColor
+                )
+            }
+
+            generalLoginError?.let { errorMsg -> // Solo se muestra si hay un error general
+                Text(
+                    text = errorMsg,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 8.dp) // Espacio si está encima del botón
+                )
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
 
             FloatingActionButton(
-                onClick = onLoginSuccess, // Llama a la acción de login exitoso
+                onClick = {
+                    if (!isLoading) { // Evita múltiples clics mientras carga
+                        handleLoginAttempt()
+                    }
+                }, // Llama a la acción de login exitoso
                 shape = CircleShape,
                 containerColor = BrightAccentColor,
                 contentColor = DarkerTextColor, // Color del icono

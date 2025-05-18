@@ -23,8 +23,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestTheme {
                 val navController = rememberNavController()
-
-
                 NavHost(
                     navController = navController,
                     startDestination = AppRoutes.INITIAL
@@ -40,7 +38,6 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-
                     composable(route = AppRoutes.REGISTRATION) {
                         RegistrationScreen(
                             onNavigateBack = {
@@ -48,7 +45,6 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-
                     composable(route = AppRoutes.LOGIN) {
                         LoginScreen( // Llama a la pantalla de formulario
                             onNavigateBack = { navController.popBackStack() },
@@ -67,7 +63,6 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-
                     composable(route = AppRoutes.PRODUCT_LIST) {
                         ProductListScreen(
                             onNavigateToCart = {
@@ -82,7 +77,6 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-
                 }
             }
         }
