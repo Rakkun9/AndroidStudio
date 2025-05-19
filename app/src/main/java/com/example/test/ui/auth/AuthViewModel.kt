@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.test.data.local.AppDatabase
-import com.example.test.data.model.User // Importa User si es necesario para otros flujos
 import com.example.test.data.repository.UserRepository
 import com.example.test.util.PasswordUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +22,6 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
     private val _loginError = MutableStateFlow<String?>(null)
     val loginError = _loginError.asStateFlow()
 
-    // Usamos SharedFlow para eventos que solo deben consumirse una vez (como la navegación)
     private val _loginSuccessEvent = MutableSharedFlow<Unit>()
     val loginSuccessEvent = _loginSuccessEvent.asSharedFlow()
 
@@ -32,7 +30,6 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
         _loginError.value = null
 
         viewModelScope.launch {
-            // kotlinx.coroutines.delay(1500) // Puedes mantener un delay si quieres simular red
             val user = userRepository.getUserByEmail(email)
 
             if (user != null && PasswordUtils.verifyPassword(passwordRaw, user.hashedPassword)) {
@@ -43,12 +40,8 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
             _isLoading.value = false
         }
     }
-
-    // Aquí añadirías la función para registrar usuarios más adelante
-    // fun registerUser(name: String, email: String, passwordRaw: String) { ... }
 }
 
-// Factory para crear AuthViewModel con dependencias
 class AuthViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {

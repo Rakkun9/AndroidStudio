@@ -1,7 +1,5 @@
-// Dentro de /app/java/com.example.test/ui/screens/LoginScreen.kt
 package com.example.test.ui.screens
 
-// --- Importaciones Necesarias ---
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,17 +26,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.test.R
-import androidx.compose.material3.CircularProgressIndicator // Para el indicador de carga
-import androidx.compose.material3.SnackbarHost // Para mensajes (opcional, Text es más simple)
-import androidx.compose.material3.SnackbarHostState // Para mensajes (opcional)
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.text.style.TextAlign
-import kotlinx.coroutines.launch // Para coroutines
-import androidx.compose.runtime.collectAsState // Para observar StateFlow
-import androidx.compose.ui.platform.LocalContext // Para obtener el contexto
-import androidx.lifecycle.viewmodel.compose.viewModel // Para obtener el ViewModel
-import com.example.test.ui.auth.AuthViewModel // Tu ViewModel
-import com.example.test.ui.auth.AuthViewModelFactory // Tu Factory
-import kotlinx.coroutines.flow.collectLatest // Para observar SharedFlow
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.test.ui.auth.AuthViewModel
+import com.example.test.ui.auth.AuthViewModelFactory
+import kotlinx.coroutines.flow.collectLatest
 
 
 val TextFieldBackgroundColor = Color(0xFF2A3C51)
@@ -63,7 +58,6 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         authViewModel.loginSuccessEvent.collectLatest {
@@ -314,10 +308,9 @@ private fun customLoginTextFieldColors(): TextFieldColors {
     )
 }
 
-// --- Previsualización ---
-@Preview(showBackground = true, backgroundColor = 0xFF1A283A) // Fondo oscuro
+@Preview(showBackground = true, backgroundColor = 0xFF1A283A)
 @Composable
-fun LoginScreenPreview() { // Cambiado el nombre para evitar conflicto si tenías otro
+fun LoginScreenPreview() {
     MaterialTheme {
         LoginScreen(
             onNavigateBack = {},

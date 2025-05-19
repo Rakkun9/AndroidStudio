@@ -31,11 +31,22 @@ class MainActivity : ComponentActivity() {
                     composable(route = AppRoutes.INITIAL) {
                         InitialScreen( // Llama a tu pantalla inicial
                             onNavigateToRegistration = {
-                                navController.navigate(AppRoutes.REGISTRATION) // Navega a Registro
+                                navController.navigate(AppRoutes.REGISTRATION)
                             },
                             onNavigateToLogin = {
-                                navController.navigate(AppRoutes.LOGIN) // Navega al formulario de Login
-                            }
+                                navController.navigate(AppRoutes.LOGIN)
+                            },
+                            onGoogleLoginSuccess = { // <-- AÑADE ESTA SECCIÓN
+                                // Acción al hacer login exitoso con Google:
+                                navController.navigate(AppRoutes.PRODUCT_LIST) {
+                                    // Elimina del historial hasta INITIAL (inclusive)
+                                    popUpTo(AppRoutes.INITIAL) {
+                                        inclusive = true
+                                    }
+                                    // Evita lanzar múltiples copias si se pulsa rápido
+                                    launchSingleTop = true
+                                }
+                            } // <-- FIN DE LA LAMBDA onGoogleLoginSuccess
                         )
                     }
                     composable(route = AppRoutes.REGISTRATION) {

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.1.21-2.0.1"
+    id("com.google.gms.google-services")
 
 }
 
@@ -51,6 +52,12 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0") // Revisa la última versión
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0") // Para viewModelScope
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0")) // Revisa la última versión del BoM
+    implementation("com.google.firebase:firebase-auth-ktx") // Firebase Authentication
+
+    // Google Sign-In (necesario para el flujo de UI de Google)
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

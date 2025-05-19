@@ -22,7 +22,6 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        // --- Callback para pre-poblar la base de datos ---
         private class AppDatabaseCallback(
             private val scope: CoroutineScope
         ) : RoomDatabase.Callback() {

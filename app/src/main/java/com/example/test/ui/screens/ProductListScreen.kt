@@ -49,30 +49,29 @@ fun ProductListScreen( onNavigateToCart: () -> Unit) {
     var selectedBottomNavItem by remember { mutableStateOf(0) }
     val bottomNavItems = listOf(
         BottomNavItem("Inicio", Icons.Filled.Home),
-        BottomNavItem("Amigos", Icons.Filled.AccountBox), // O People
-        BottomNavItem("Comunidad", Icons.Filled.Face), // O Forum, Groups
-        BottomNavItem("Favoritos", Icons.Filled.Favorite), // O FavoriteBorder
+        BottomNavItem("Amigos", Icons.Filled.AccountBox),
+        BottomNavItem("Comunidad", Icons.Filled.Face),
+        BottomNavItem("Favoritos", Icons.Filled.Favorite),
         BottomNavItem("Perfil", Icons.Filled.Person)
     )
 
     Scaffold(
-        containerColor = DarkBackground, // Fondo oscuro para toda la pantalla
+        containerColor = DarkBackground,
         topBar = {
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        // Placeholder para el Logo GGDROP
                         Box(
                             modifier = Modifier
                                 .size(32.dp)
                                 .background(BrightAccentColor, CircleShape)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Bienvenido usuario", fontSize = 18.sp) // Texto ejemplo
+                        Text("Bienvenido usuario", fontSize = 18.sp)
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Acción Buscar */ }) {
+                    IconButton(onClick = {  }) {
                         Icon(Icons.Filled.Search, contentDescription = "Buscar")
                     }
                     IconButton(onClick =  onNavigateToCart) {
@@ -80,9 +79,9 @@ fun ProductListScreen( onNavigateToCart: () -> Unit) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBackground, // Fondo oscuro
-                    titleContentColor = TextColorLight, // Texto claro
-                    actionIconContentColor = IconColorLight // Iconos claros
+                    containerColor = DarkBackground,
+                    titleContentColor = TextColorLight,
+                    actionIconContentColor = IconColorLight
                 )
             )
         },
