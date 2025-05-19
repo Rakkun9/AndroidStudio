@@ -33,6 +33,12 @@ import androidx.compose.material3.SnackbarHost // Para mensajes (opcional, Text 
 import androidx.compose.material3.SnackbarHostState // Para mensajes (opcional)
 import androidx.compose.ui.text.style.TextAlign
 import kotlinx.coroutines.launch // Para coroutines
+import androidx.compose.runtime.collectAsState // Para observar StateFlow
+import androidx.compose.ui.platform.LocalContext // Para obtener el contexto
+import androidx.lifecycle.viewmodel.compose.viewModel // Para obtener el ViewModel
+import com.example.test.ui.auth.AuthViewModel // Tu ViewModel
+import com.example.test.ui.auth.AuthViewModelFactory // Tu Factory
+import kotlinx.coroutines.flow.collectLatest // Para observar SharedFlow
 
 
 val TextFieldBackgroundColor = Color(0xFF2A3C51)
@@ -46,65 +52,48 @@ fun LoginScreen(
     onForgotPassword: () -> Unit,
 ) {
 
+    val context = LocalContext.current
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(context))
+
+    val isLoading by authViewModel.isLoading.collectAsState()
+    val generalLoginError by authViewModel.loginError.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-
-    // --- NUEVOS ESTADOS ---
-    // Para errores de validación por campo
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
-    // Para error general de login (ej: credenciales incorrectas)
-    var generalLoginError by remember { mutableStateOf<String?>(null) }
-    // Para mostrar el indicador de carga
-    var isLoading by remember { mutableStateOf(false) }
-
-    // Scope para lanzar coroutines (para simular delay)
     val scope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        authViewModel.loginSuccessEvent.collectLatest {
+            onLoginSuccess()
+        }
+    }
+
     fun handleLoginAttempt() {
-        // 1. Limpiar errores previos
         emailError = null
         passwordError = null
-        generalLoginError = null
-        var isValid = true
 
-        // 2. Validar Email
+        var isValid = true
         if (email.isBlank()) {
             emailError = "El correo no puede estar vacío"
             isValid = false
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            // Necesitarás importar android.util.Patterns
             emailError = "Formato de correo inválido"
             isValid = false
         }
 
-        // 3. Validar Contraseña
         if (password.isBlank()) {
             passwordError = "La contraseña no puede estar vacía"
             isValid = false
-        } else if (password.length < 6) { // Ejemplo: Mínimo 6 caracteres
+        } else if (password.length < 6) {
             passwordError = "La contraseña debe tener al menos 6 caracteres"
             isValid = false
         }
 
-        if (!isValid) {
-            return // No continuar si la validación falló
-        }
-
-        // 4. Si es válido, iniciar carga y simular autenticación
-        scope.launch {
-            isLoading = true
-            kotlinx.coroutines.delay(1500) // Simula una llamada de red (importa kotlinx.coroutines.delay)
-
-            // 5. Autenticación simulada
-            if (email == "test@example.com" && password == "password123" ) {
-                onLoginSuccess() // Llama a la lambda de éxito (que navega)
-            } else {
-                generalLoginError = "Correo o contraseña incorrectos"
-            }
-            isLoading = false
+        if (isValid) {
+            authViewModel.loginUser(email, password)
         }
     }
 
@@ -173,8 +162,8 @@ fun LoginScreen(
             TextField(
                 value = email,
                 onValueChange = { email = it; emailError = null },
-                isError = emailError != null, // Se marca como error si hay mensaje
-                supportingText = { // Muestra el mensaje de error debajo
+                isError = emailError != null,
+                supportingText = {
                     if (emailError != null) {
                         Text(emailError!!, color = MaterialTheme.colorScheme.error)
                     }
@@ -255,18 +244,18 @@ fun LoginScreen(
 
             if (isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.padding(bottom = 16.dp), // Espacio si está encima del botón
+                    modifier = Modifier.padding(bottom = 16.dp),
                     color = BrightAccentColor
                 )
             }
 
-            generalLoginError?.let { errorMsg -> // Solo se muestra si hay un error general
+            generalLoginError?.let { errorMsg ->
                 Text(
                     text = errorMsg,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 8.dp) // Espacio si está encima del botón
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
 
