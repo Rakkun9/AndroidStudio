@@ -43,21 +43,17 @@ android {
 }
 
 dependencies {
-
     val room_version = "2.7.1"
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0") // Revisa la última versión
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0") // Para viewModelScope
-
-    implementation(platform("com.google.firebase:firebase-bom:33.1.0")) // Revisa la última versión del BoM
-    implementation("com.google.firebase:firebase-auth-ktx") // Firebase Authentication
-
-    // Google Sign-In (necesario para el flujo de UI de Google)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

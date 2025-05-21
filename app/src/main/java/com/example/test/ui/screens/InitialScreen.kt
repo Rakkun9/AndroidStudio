@@ -26,6 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.test.R // Asegúrate que esta R sea la de tu proyecto
+import com.example.test.data.local.AppDatabase
+import com.example.test.data.repository.UserRepository
+import com.example.test.ui.auth.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -44,6 +47,7 @@ val TextColorLight = Color.White
 
 @Composable
 fun InitialScreen(
+    authViewModel: AuthViewModel,
     onNavigateToRegistration: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onGoogleLoginSuccess: () -> Unit // Lambda para cuando Google Sign-In + Firebase Auth es exitoso
@@ -237,10 +241,15 @@ private fun firebaseAuthWithGoogle(idToken: String, callback: (Boolean) -> Unit)
 @Composable
 fun InitialScreenPreview_NewDesign() {
     // TuAppTheme { // Si tienes un tema
+
+    val context = LocalContext.current
+    // Para la preview, necesitas crear una instancia (puede ser una real o un mock)
+    val previewAuthViewModel = AuthViewModel(UserRepository(AppDatabase.getDatabase(context).userDao()))
     InitialScreen(
         onNavigateToRegistration = {},
         onNavigateToLogin = {},
-        onGoogleLoginSuccess = {} // Añade la nueva lambda
+        onGoogleLoginSuccess = {}, // Añade la nueva lambda
+        authViewModel = previewAuthViewModel
     )
     // }
 }

@@ -13,7 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [User::class], version = 1, exportSchema = false)
+@Database(entities = [User::class], version = 2, exportSchema = false) // <-- VERSIÓN INCREMENTADA
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
@@ -34,26 +34,25 @@ abstract class AppDatabase : RoomDatabase() {
                 }
             }
 
+            // Esta función se llama solo cuando la BD se crea. Si se destruye por fallbackToDestructiveMigration,
+            // se volverá a llamar.
             suspend fun populateDatabase(userDao: UserDao) {
-
-                // Usuarios de ejemplo
                 val user1 = User(
                     name = "Usuario Uno",
                     email = "user1@example.com",
-                    hashedPassword = PasswordUtils.hashPassword("password123")
+                    hashedPassword = PasswordUtils.hashPassword("password123"),
+                    role = "Cliente" // <-- ROL AÑADIDO
                 )
                 val user2 = User(
-                    name = "Usuario Dos",
-                    email = "user2@example.com",
-                    hashedPassword = PasswordUtils.hashPassword("securepass")
+                    name = "Admin Dos",
+                    email = "admin@example.com",
+                    hashedPassword = PasswordUtils.hashPassword("adminpass"),
+                    role = "Administrador" // <-- ROL AÑADIDO
                 )
-
                 userDao.insertUser(user1)
                 userDao.insertUser(user2)
             }
         }
-        // --- Fin del Callback ---
-
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -62,7 +61,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                    .addCallback(AppDatabaseCallback(CoroutineScope(Dispatchers.IO))) // <-- AÑADE EL CALLBACK AQUÍ
+                    .addCallback(AppDatabaseCallback(CoroutineScope(Dispatchers.IO)))
+                    .fallbackToDestructiveMigration() // <-- AÑADE ESTO PARA SIMPLIFICAR MIGRACIONES EN DESARROLLO
                     .build()
                 INSTANCE = instance
                 instance

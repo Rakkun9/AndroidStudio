@@ -1,6 +1,7 @@
 package com.example.test.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,6 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.test.data.local.AppDatabase
+import com.example.test.data.repository.UserRepository
 import com.example.test.ui.auth.AuthViewModel
 import com.example.test.ui.auth.AuthViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
@@ -42,13 +45,12 @@ val TextFieldBackgroundColor = Color(0xFF2A3C51)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
+    authViewModel: AuthViewModel,
     onNavigateBack: () -> Unit, // Para el botón de volver
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (userId: Int, userRole: String) -> Unit,
     onForgotPassword: () -> Unit,
 ) {
-
-    val context = LocalContext.current
-    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(context))
+    Log.d("LoginScreen", "Instancia de AuthViewModel en Login: $authViewModel")
 
     val isLoading by authViewModel.isLoading.collectAsState()
     val generalLoginError by authViewModel.loginError.collectAsState()
@@ -60,8 +62,9 @@ fun LoginScreen(
     var passwordError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        authViewModel.loginSuccessEvent.collectLatest {
-            onLoginSuccess()
+        authViewModel.loginSuccessEvent.collectLatest { (userId, userRole) ->
+            Log.d("LoginScreen", "Login local exitoso para usuario ID: $userId, Rol: $userRole")
+            onLoginSuccess(userId, userRole) // Asegúrate que onLoginSuccess acepte estos
         }
     }
 
@@ -311,11 +314,17 @@ private fun customLoginTextFieldColors(): TextFieldColors {
 @Preview(showBackground = true, backgroundColor = 0xFF1A283A)
 @Composable
 fun LoginScreenPreview() {
+    val context = LocalContext.current
+    val previewAuthViewModel = AuthViewModel(UserRepository(AppDatabase.getDatabase(context).userDao()))
     MaterialTheme {
         LoginScreen(
             onNavigateBack = {},
-            onLoginSuccess = {},
-            onForgotPassword = {}
+            onLoginSuccess = { userId, userRole ->
+                // En la preview, no hacemos nada con userId o userRole
+                Log.d("LoginPreview", "Login success con ID: $userId, Rol: $userRole")
+            },
+            onForgotPassword = {},
+            authViewModel = previewAuthViewModel,
         )
     }
 }
