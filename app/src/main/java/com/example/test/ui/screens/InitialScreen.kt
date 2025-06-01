@@ -237,14 +237,19 @@ private fun firebaseAuthWithGoogle(idToken: String, callback: (Boolean) -> Unit)
 
 
 // --- Previsualización ---
-@Preview(showBackground = true, widthDp = 360, heightDp = 700) // Ajusta altura para ver el nuevo botón
+@Preview(
+    showBackground = true,
+    widthDp = 360,
+    heightDp = 700
+) // Ajusta altura para ver el nuevo botón
 @Composable
 fun InitialScreenPreview_NewDesign() {
     // TuAppTheme { // Si tienes un tema
 
     val context = LocalContext.current
     // Para la preview, necesitas crear una instancia (puede ser una real o un mock)
-    val previewAuthViewModel = AuthViewModel(UserRepository(AppDatabase.getDatabase(context).userDao()))
+    val previewAuthViewModel =
+        AuthViewModel(UserRepository(AppDatabase.getDatabase(context).userDao()))
     InitialScreen(
         onNavigateToRegistration = {},
         onNavigateToLogin = {},

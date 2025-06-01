@@ -1,4 +1,3 @@
-
 package com.example.test.ui.screens
 
 import androidx.compose.foundation.background
@@ -130,6 +129,7 @@ fun ShoppingCartScreen(
         }
     }
 }
+
 data class CartItemData(
     val id: Int,
     val productName: String,

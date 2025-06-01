@@ -7,4 +7,5 @@ object AppRoutes {
     const val SHOPPING_CART = "shoppingCart"
     const val INITIAL = "initial"
     const val PROFILE = "profile"
+    const val CREATE_PRODUCT = "create_product"
 }

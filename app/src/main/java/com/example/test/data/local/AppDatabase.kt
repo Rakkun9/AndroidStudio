@@ -1,22 +1,29 @@
 // En AppDatabase.kt
 package com.example.test.data.local // O tu paquete
 
+import ProductDao
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase // Asegúrate de importar esta
 import com.example.test.data.dao.UserDao
+import com.example.test.data.model.Product
 import com.example.test.data.model.User
 import com.example.test.util.PasswordUtils // Importa tu PasswordUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [User::class], version = 2, exportSchema = false) // <-- VERSIÓN INCREMENTADA
+@Database(
+    entities = [User::class, Product::class],
+    version = 4,
+    exportSchema = false
+) // <-- VERSIÓN INCREMENTADA
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
+    abstract fun productDao(): ProductDao
 
     companion object {
         @Volatile

@@ -18,8 +18,10 @@ import com.example.test.ui.screens.ProductListScreen
 import com.example.test.ui.screens.ProfileScreen
 import com.example.test.ui.screens.RegistrationScreen
 import com.example.test.ui.screens.ShoppingCartScreen
-
 import com.example.test.ui.theme.TestTheme
+import com.example.test.ui.product.ProductViewModel
+import com.example.test.ui.product.ProductViewModelFactory
+import com.example.test.ui.screens.CreateProductScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +31,7 @@ class MainActivity : ComponentActivity() {
             TestTheme {
                 val navController = rememberNavController()
                 val authViewModel: AuthViewModel = viewModel(
-                    factory = AuthViewModelFactory(applicationContext) // Usa applicationContext
+                    factory = AuthViewModelFactory(applicationContext)
                 )
                 NavHost(
                     navController = navController,
@@ -37,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     composable(route = AppRoutes.INITIAL) {
-                        InitialScreen( // Llama a tu pantalla inicial
+                        InitialScreen(
                             authViewModel = authViewModel,
                             onNavigateToRegistration = {
                                 navController.navigate(AppRoutes.REGISTRATION)
@@ -45,17 +47,16 @@ class MainActivity : ComponentActivity() {
                             onNavigateToLogin = {
                                 navController.navigate(AppRoutes.LOGIN)
                             },
-                            onGoogleLoginSuccess = { // <-- AÑADE ESTA SECCIÓN
-                                // Acción al hacer login exitoso con Google:
+                            onGoogleLoginSuccess = {
                                 navController.navigate(AppRoutes.PRODUCT_LIST) {
-                                    // Elimina del historial hasta INITIAL (inclusive)
+
                                     popUpTo(AppRoutes.INITIAL) {
                                         inclusive = true
                                     }
-                                    // Evita lanzar múltiples copias si se pulsa rápido
+
                                     launchSingleTop = true
                                 }
-                            } // <-- FIN DE LA LAMBDA onGoogleLoginSuccess
+                            }
                         )
                     }
                     composable(route = AppRoutes.REGISTRATION) {
@@ -64,26 +65,26 @@ class MainActivity : ComponentActivity() {
                             onNavigateBack = {
                                 navController.popBackStack()
                             },
-                            onNavigateToLogin = { // <-- AÑADE ESTA LAMBDA
-                                // Navega a la pantalla de login, y si vienes del registro,
-                                // quizás quieras limpiar el backstack para que no vuelva al registro
-                                // al presionar "atrás" desde el login.
+                            onNavigateToLogin = {
                                 navController.navigate(AppRoutes.LOGIN) {
-                                    popUpTo(AppRoutes.REGISTRATION) { inclusive = true } // Opción 1: Quita el registro del stack
-                                    // O si quieres que pueda volver al registro desde login:
-                                    // navController.navigate(AppRoutes.LOGIN)
-                                    launchSingleTop = true // Evita múltiples instancias de login
+                                    popUpTo(AppRoutes.REGISTRATION) {
+                                        inclusive = true
+                                    }
+                                    launchSingleTop = true
                                 }
 
                             }
                         )
                     }
                     composable(route = AppRoutes.LOGIN) {
-                        LoginScreen( // Llama a la pantalla de formulario
+                        LoginScreen(
                             authViewModel = authViewModel,
                             onNavigateBack = { navController.popBackStack() },
-                            onLoginSuccess = { userId, userRole -> // <<--- MODIFICADO AQUÍ para aceptar los parámetros
-                                android.util.Log.d("MainActivity", "Login Exitoso. UserID: $userId, Role: $userRole. Navegando a ProductList.")
+                            onLoginSuccess = { userId, userRole ->
+                                android.util.Log.d(
+                                    "MainActivity",
+                                    "Login Exitoso. UserID: $userId, Role: $userRole. Navegando a ProductList."
+                                )
 
                                 navController.navigate(AppRoutes.PRODUCT_LIST) {
                                     popUpTo(AppRoutes.INITIAL) {
@@ -91,9 +92,9 @@ class MainActivity : ComponentActivity() {
                                     }
                                     launchSingleTop = true
                                 }
-                            }, // <-- FIN DE LA LAMBDA onLoginSuccess
+                            },
                             onForgotPassword = {
-                                // Lógica para olvidar contraseña si la implementas
+
                             }
                         )
                     }
@@ -102,14 +103,13 @@ class MainActivity : ComponentActivity() {
                             onNavigateToCart = {
                                 navController.navigate(AppRoutes.SHOPPING_CART)
                             },
-                            onNavigateToProfile = { // <-- AÑADE ESTO
-                                // Aquí necesitamos saber el ID del usuario actual.
-                                // Lo ideal es que AuthViewModel ya tenga _currentUserId seteado.
-                                // ProfileScreen tomará ese ID del AuthViewModel.
+                            onNavigateToProfile = {
                                 navController.navigate(AppRoutes.PROFILE)
-                            }
-                            // , onRecentlyViewedItemClick = { ... } // Si los tienes
-                            // , onInterestItemClick = { ... }
+                            },
+                            onNavigateToCreateProduct = { // <-- AÑADE ESTO
+                                navController.navigate(AppRoutes.CREATE_PRODUCT)
+                            },
+                            authViewModel = authViewModel,
                         )
                     }
                     composable(route = AppRoutes.SHOPPING_CART) {
@@ -119,20 +119,24 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(route = AppRoutes.PROFILE) {
                         ProfileScreen(
-                            authViewModel = authViewModel, // Esto ya está bien, se pasa la instancia única
+                            authViewModel = authViewModel,
                             onNavigateBack = { navController.popBackStack() },
-                            onAccountDeletedAndNavigateToInitial = { // <-- AÑADE ESTA LAMBDA COMPLETA
-                                // Acción después de que la cuenta es eliminada exitosamente:
-                                // Navega a la pantalla inicial y limpia TODO el historial de atrás.
+                            onAccountDeletedAndNavigateToInitial = {
                                 navController.navigate(AppRoutes.INITIAL) {
-                                    // Pop up to the start destination of the graph
                                     popUpTo(navController.graph.findStartDestination().id) {
-                                        inclusive = true // Incluye el start destination en el pop
+                                        inclusive = true
                                     }
-                                    // Evita lanzar múltiples instancias de la pantalla inicial
                                     launchSingleTop = true
                                 }
-                            } // <-- FIN DE LA LAMBDA onAccountDeletedAndNavigateToInitial
+                            }
+                        )
+                    }
+                    composable(route = AppRoutes.CREATE_PRODUCT) {
+                        val productViewModel: ProductViewModel =
+                            viewModel(factory = ProductViewModelFactory(applicationContext))
+                        CreateProductScreen(
+                            productViewModel = productViewModel,
+                            onNavigateBack = { navController.popBackStack() }
                         )
                     }
                 }

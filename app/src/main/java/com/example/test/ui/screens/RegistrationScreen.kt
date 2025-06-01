@@ -32,6 +32,7 @@ import com.example.test.data.repository.UserRepository
 import com.example.test.ui.auth.AuthViewModel // Tu ViewModel
 import com.example.test.ui.auth.AuthViewModelFactory // Tu Factory
 import kotlinx.coroutines.flow.collectLatest // Para observar SharedFlow
+
 // Importa tus colores si están definidos centralmente
 // import com.example.test.ui.theme.DarkBackground
 // import com.example.test.ui.theme.TextColorLight
@@ -57,7 +58,7 @@ val ErrorColor = Color(0xFFB00020) // Un color de error estándar
 @Composable
 fun RegistrationScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToLogin: () -> Unit ,
+    onNavigateToLogin: () -> Unit,
     authViewModel: AuthViewModel,
 ) {
     val context = LocalContext.current
@@ -101,12 +102,17 @@ fun RegistrationScreen(
     // Función para manejar el intento de registro
     fun handleRegistrationAttempt() {
         // Limpiar errores previos
-        nameError = null; lastNameError = null; emailError = null; passwordError = null; confirmPasswordError = null; roleError = null;
+        nameError = null; lastNameError = null; emailError = null; passwordError =
+            null; confirmPasswordError = null; roleError = null;
         // authViewModel.clearRegistrationError() // Necesitarías una función para esto en el ViewModel si el error es persistente
 
         var isValid = true
-        if (name.isBlank()) { nameError = "El nombre es obligatorio"; isValid = false }
-        if (lastName.isBlank()) { lastNameError = "El apellido es obligatorio"; isValid = false }
+        if (name.isBlank()) {
+            nameError = "El nombre es obligatorio"; isValid = false
+        }
+        if (lastName.isBlank()) {
+            lastNameError = "El apellido es obligatorio"; isValid = false
+        }
         if (email.isBlank()) {
             emailError = "El correo es obligatorio"; isValid = false
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -122,10 +128,17 @@ fun RegistrationScreen(
         } else if (password != confirmPassword) {
             confirmPasswordError = "Las contraseñas no coinciden"; isValid = false
         }
-        if (selectedRole.isBlank()) { roleError = "Selecciona un rol"; isValid = false} // Aunque siempre hay uno por defecto
+        if (selectedRole.isBlank()) {
+            roleError = "Selecciona un rol"; isValid = false
+        } // Aunque siempre hay uno por defecto
 
         if (isValid) {
-            authViewModel.registerUser(name = "$name $lastName", email = email, passwordRaw = password, role = selectedRole)
+            authViewModel.registerUser(
+                name = "$name $lastName",
+                email = email,
+                passwordRaw = password,
+                role = selectedRole
+            )
         }
     }
 
@@ -178,7 +191,12 @@ fun RegistrationScreen(
                 leadingIcon = { Icon(Icons.Filled.Face, null, tint = UnfocusedInputColor) },
                 colors = customRegistrationTextFieldColors(isError = lastNameError != null),
                 isError = lastNameError != null,
-                supportingText = { if (lastNameError != null) Text(lastNameError!!, color = ErrorColor) }
+                supportingText = {
+                    if (lastNameError != null) Text(
+                        lastNameError!!,
+                        color = ErrorColor
+                    )
+                }
             )
             // Email
             OutlinedTextField(
@@ -206,12 +224,21 @@ fun RegistrationScreen(
                 trailingIcon = {
                     val image = if (passwordVisible) Icons.Filled.PlayArrow else Icons.Filled.Close
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(image, if (passwordVisible) "Ocultar" else "Mostrar", tint = UnfocusedInputColor)
+                        Icon(
+                            image,
+                            if (passwordVisible) "Ocultar" else "Mostrar",
+                            tint = UnfocusedInputColor
+                        )
                     }
                 },
                 colors = customRegistrationTextFieldColors(isError = passwordError != null),
                 isError = passwordError != null,
-                supportingText = { if (passwordError != null) Text(passwordError!!, color = ErrorColor) }
+                supportingText = {
+                    if (passwordError != null) Text(
+                        passwordError!!,
+                        color = ErrorColor
+                    )
+                }
             )
             // Confirmar Contraseña
             OutlinedTextField(
@@ -224,14 +251,24 @@ fun RegistrationScreen(
                 leadingIcon = { Icon(Icons.Filled.PlayArrow, null, tint = UnfocusedInputColor) },
                 visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    val image = if (confirmPasswordVisible) Icons.Filled.Person else Icons.Filled.Close
+                    val image =
+                        if (confirmPasswordVisible) Icons.Filled.Person else Icons.Filled.Close
                     IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
-                        Icon(image, if (confirmPasswordVisible) "Ocultar" else "Mostrar", tint = UnfocusedInputColor)
+                        Icon(
+                            image,
+                            if (confirmPasswordVisible) "Ocultar" else "Mostrar",
+                            tint = UnfocusedInputColor
+                        )
                     }
                 },
                 colors = customRegistrationTextFieldColors(isError = confirmPasswordError != null),
                 isError = confirmPasswordError != null,
-                supportingText = { if (confirmPasswordError != null) Text(confirmPasswordError!!, color = ErrorColor) }
+                supportingText = {
+                    if (confirmPasswordError != null) Text(
+                        confirmPasswordError!!,
+                        color = ErrorColor
+                    )
+                }
             )
 
             // --- Selección de Rol ---
@@ -249,7 +286,9 @@ fun RegistrationScreen(
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedRoleDropdown) },
                     colors = customRegistrationTextFieldColors(isError = roleError != null),
                     isError = roleError != null,
-                    modifier = Modifier.menuAnchor().fillMaxWidth() // Importante para el ancla
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth() // Importante para el ancla
                 )
                 ExposedDropdownMenu(
                     expanded = expandedRoleDropdown,
@@ -269,7 +308,14 @@ fun RegistrationScreen(
                 }
             }
             if (roleError != null) {
-                Text(roleError!!, color = ErrorColor, style = MaterialTheme.typography.bodySmall, modifier = Modifier.fillMaxWidth().padding(start = 16.dp))
+                Text(
+                    roleError!!,
+                    color = ErrorColor,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp)
+                )
             }
             // --- Fin Selección de Rol ---
 
@@ -303,11 +349,16 @@ fun RegistrationScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = BrightAccentColor),
                 enabled = !isLoading // Deshabilita el botón mientras carga
             ) {
-                Text("Crear Cuenta", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = DarkerTextColor)
+                Text(
+                    "Crear Cuenta",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = DarkerTextColor
+                )
             }
 
             // Enlace a Login
-            TextButton(onClick = { if(!isLoading) onNavigateToLogin() }) {
+            TextButton(onClick = { if (!isLoading) onNavigateToLogin() }) {
                 Text("¿Ya tienes cuenta? Inicia Sesión", color = BrightAccentColor)
             }
             Spacer(modifier = Modifier.height(8.dp)) // Espacio al final

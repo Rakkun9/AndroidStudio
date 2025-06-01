@@ -14,6 +14,7 @@ class UserRepository(private val userDao: UserDao) {
     suspend fun insertUser(user: User): Long {
         return userDao.insertUser(user)
     }
+
     fun getUserById(userId: Int): Flow<User?> {
         return userDao.getUserById(userId)
     }
@@ -21,6 +22,7 @@ class UserRepository(private val userDao: UserDao) {
     suspend fun updateUser(user: User) {
         userDao.updateUser(user)
     }
+
     suspend fun deleteUserById(userId: Int): Int {
         return userDao.deleteUserById(userId)
     }

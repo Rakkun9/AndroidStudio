@@ -29,6 +29,7 @@ import com.example.test.data.repository.UserRepository
 import com.example.test.ui.auth.AuthViewModel
 import com.example.test.ui.auth.AuthViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
+
 // Importa tus colores base y específicos si no vienen del tema
 // import com.example.test.ui.theme.DarkBackground
 // import com.example.test.ui.theme.TextColorLight
@@ -112,7 +113,12 @@ fun ProfileScreen(
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
             title = { Text("Confirmar Eliminación", color = TextColorLight) },
-            text = { Text("¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.", color = TextColorLight.copy(alpha = 0.8f)) },
+            text = {
+                Text(
+                    "¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.",
+                    color = TextColorLight.copy(alpha = 0.8f)
+                )
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -191,7 +197,13 @@ fun ProfileScreen(
                     readOnly = true,
                     label = { Text("Correo Electrónico") },
                     modifier = Modifier.fillMaxWidth(),
-                    leadingIcon = { Icon(Icons.Filled.AccountCircle, null, tint = UnfocusedInputColor) },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Filled.AccountCircle,
+                            null,
+                            tint = UnfocusedInputColor
+                        )
+                    },
                     colors = customRegistrationTextFieldColors(isError = false).copy( // Hacemos que parezca deshabilitado
                         disabledTextColor = TextColorLight.copy(alpha = 0.7f),
                         disabledLabelColor = UnfocusedInputColor.copy(alpha = 0.5f),
@@ -261,11 +273,18 @@ fun ProfileScreen(
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = ErrorColor // Color del texto/icono
                     ),
-                    border = BorderStroke(1.dp, ErrorColor.copy(alpha = 0.7f)), // Borde con color de error
+                    border = BorderStroke(
+                        1.dp,
+                        ErrorColor.copy(alpha = 0.7f)
+                    ), // Borde con color de error
                     enabled = !isDeleting && !isUpdating // Deshabilitar si otra operación está en curso
                 ) {
                     if (isDeleting) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = ErrorColor, strokeWidth = 2.dp)
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = ErrorColor,
+                            strokeWidth = 2.dp
+                        )
                     } else {
                         Text("Eliminar Cuenta", fontWeight = FontWeight.Bold)
                     }
@@ -316,7 +335,8 @@ private fun customRegistrationTextFieldColors(isError: Boolean = false): TextFie
 @Composable
 fun ProfileScreenPreview() {
     val context = LocalContext.current
-    val previewAuthViewModel = AuthViewModel(UserRepository(AppDatabase.getDatabase(context).userDao()))
+    val previewAuthViewModel =
+        AuthViewModel(UserRepository(AppDatabase.getDatabase(context).userDao()))
     MaterialTheme { // O tu tema específico
         ProfileScreen(
             onNavigateBack = {},

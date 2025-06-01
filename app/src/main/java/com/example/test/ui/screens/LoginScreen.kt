@@ -315,7 +315,8 @@ private fun customLoginTextFieldColors(): TextFieldColors {
 @Composable
 fun LoginScreenPreview() {
     val context = LocalContext.current
-    val previewAuthViewModel = AuthViewModel(UserRepository(AppDatabase.getDatabase(context).userDao()))
+    val previewAuthViewModel =
+        AuthViewModel(UserRepository(AppDatabase.getDatabase(context).userDao()))
     MaterialTheme {
         LoginScreen(
             onNavigateBack = {},
